@@ -1,6 +1,7 @@
 package app.oatgh.breadmod.mixin;
 
 import app.oatgh.breadmod.BreadMod;
+import app.oatgh.breadmod.BreadModItems;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.*;
 import net.minecraft.entity.player.PlayerEntity;
@@ -43,12 +44,9 @@ public abstract class BowlMixin {
     public abstract TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand);
 
     @Shadow
-    protected static BlockHitResult raycast(World world, PlayerEntity player, RaycastContext.FluidHandling fluidHandling){
+    protected static BlockHitResult raycast(World world, PlayerEntity player, RaycastContext.FluidHandling fluidHandling) {
         throw new AssertionError();
     }
-
-
-
 
 
     @Inject(at = @At("HEAD"), method = "use", cancellable = true)
@@ -61,14 +59,13 @@ public abstract class BowlMixin {
 
             if (blockHitResult.getType() == HitResult.Type.MISS) cir.setReturnValue(TypedActionResult
                     .fail(handItem));
-             else if (blockHitResult.getType() != HitResult.Type.BLOCK) cir.setReturnValue(TypedActionResult
+            else if (blockHitResult.getType() != HitResult.Type.BLOCK) cir.setReturnValue(TypedActionResult
                     .fail(handItem));
-             else
-             {
+            else {
                 BlockPos hitedBlockPos = blockHitResult.getBlockPos();
                 Direction hitedDirection = blockHitResult.getSide();
                 BlockPos realAimedPos = hitedBlockPos.offset(hitedDirection);
-                 BlockState hitedBlockState = world.getBlockState(hitedBlockPos);
+                BlockState hitedBlockState = world.getBlockState(hitedBlockPos);
                 if (world.canPlayerModifyAt(user, hitedBlockPos) && user.canPlaceOn(realAimedPos, hitedDirection, handItem)) {
                     if (this.fluidTest == Fluids.EMPTY) {
                         if (hitedBlockState.getBlock() instanceof FluidDrainable) {
@@ -79,17 +76,17 @@ public abstract class BowlMixin {
                                     user.playSound(sound, 1.0F, 1.0F);
                                 });
                                 world.emitGameEvent(user, GameEvent.FLUID_PICKUP, hitedBlockPos);
-                                ItemStack waterBowl = new ItemStack(BreadMod.WATER_BOWL, 1);
+                                ItemStack waterBowl = new ItemStack(BreadModItems.WATER_BOWL, 1);
                                 ItemStack exchanged =
                                         ItemUsage.exchangeStack(handItem, user, waterBowl);
                                 if (!world.isClient) {
                                     Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity) user, drainedBucket);
                                 }
                                 cir.setReturnValue(TypedActionResult.success(exchanged));
-                            }else cir.setReturnValue(TypedActionResult.fail(handItem));
-                        }else cir.setReturnValue(TypedActionResult.fail(handItem));
-                    }else cir.setReturnValue(TypedActionResult.fail(handItem));
-                }else cir.setReturnValue(TypedActionResult.fail(handItem));
+                            } else cir.setReturnValue(TypedActionResult.fail(handItem));
+                        } else cir.setReturnValue(TypedActionResult.fail(handItem));
+                    } else cir.setReturnValue(TypedActionResult.fail(handItem));
+                } else cir.setReturnValue(TypedActionResult.fail(handItem));
             }
         }
     }
