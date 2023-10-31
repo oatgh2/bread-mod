@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "app.oatgh.breadmod.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"mixins": [
+		"ExampleMixin",
+		"BowlMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
